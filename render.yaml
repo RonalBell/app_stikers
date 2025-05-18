@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: app-stikers
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production 

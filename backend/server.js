@@ -9,7 +9,7 @@ const fs = require('fs');
 const puppeteer = require('puppeteer');
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 3000;
 
 // Configuración de CORS
 app.use(cors());
@@ -507,6 +507,6 @@ app.post('/api/logout', async (req, res) => {
 });
 
 // Iniciar servidor
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
 });

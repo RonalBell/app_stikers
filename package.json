@@ -1,5 +1,17 @@
 {
+  "name": "app-stikers",
+  "version": "1.0.0",
+  "description": "Aplicación de stickers para WhatsApp",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "install": "cd backend && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
   "dependencies": {
-    "puppeteer": "^24.8.2"
+    "express": "^4.18.2"
   }
 }
