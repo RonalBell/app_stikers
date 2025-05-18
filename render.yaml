@@ -8,4 +8,8 @@ services:
       - key: PORT
         value: 3000
       - key: NODE_ENV
-        value: production 
+        value: production
+    healthCheckPath: /
+    autoDeploy: true
+    plan: free
+    numInstances: 1 

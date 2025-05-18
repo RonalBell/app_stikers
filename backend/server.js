@@ -14,6 +14,11 @@ const port = process.env.PORT || 3000;
 // Configuración de CORS
 app.use(cors());
 
+// Ruta de prueba para health check
+app.get('/', (req, res) => {
+    res.json({ status: 'ok', message: 'Servidor funcionando' });
+});
+
 // Configuración de multer para manejar archivos
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -507,6 +512,21 @@ app.post('/api/logout', async (req, res) => {
 });
 
 // Iniciar servidor
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
+const server = app.listen(port, '0.0.0.0', () => {
+    console.log(`Servidor corriendo en el puerto ${port}`);
+});
+
+// Manejo de errores del servidor
+server.on('error', (error) => {
+    console.error('Error al iniciar el servidor:', error);
+    process.exit(1);
+});
+
+// Manejo de señales de terminación
+process.on('SIGTERM', () => {
+    console.log('Recibida señal SIGTERM. Cerrando servidor...');
+    server.close(() => {
+        console.log('Servidor cerrado');
+        process.exit(0);
+    });
 });
