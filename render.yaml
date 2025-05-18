@@ -2,7 +2,7 @@ services:
   - type: web
     name: app-stikers
     env: node
-    buildCommand: cd backend && npm install
+    buildCommand: npm install && cd backend && npm install
     startCommand: cd backend && npm start
     envVars:
       - key: PORT
