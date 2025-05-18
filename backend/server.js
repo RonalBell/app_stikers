@@ -30,7 +30,7 @@ const upload = multer({
 // Crear directorio temporal si no existe
 const tempDir = path.join(__dirname, 'temp');
 if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
+    fs.mkdirSync(tempDir, { recursive: true });
 }
 
 // Inicializar cliente de WhatsApp
@@ -511,9 +511,30 @@ app.post('/api/logout', async (req, res) => {
     }
 });
 
+// Función para limpiar archivos temporales
+async function cleanupTempFiles() {
+    try {
+        const files = await fs.promises.readdir(tempDir);
+        for (const file of files) {
+            const filePath = path.join(tempDir, file);
+            try {
+                await fs.promises.unlink(filePath);
+            } catch (error) {
+                console.log(`Error al eliminar archivo temporal ${file}:`, error.message);
+            }
+        }
+    } catch (error) {
+        console.log('Error al limpiar archivos temporales:', error.message);
+    }
+}
+
+// Limpiar archivos temporales cada hora
+setInterval(cleanupTempFiles, 60 * 60 * 1000);
+
 // Iniciar servidor
 const server = app.listen(port, '0.0.0.0', () => {
     console.log(`Servidor corriendo en el puerto ${port}`);
+    console.log(`Entorno: ${process.env.NODE_ENV}`);
 });
 
 // Manejo de errores del servidor
@@ -525,8 +546,20 @@ server.on('error', (error) => {
 // Manejo de señales de terminación
 process.on('SIGTERM', () => {
     console.log('Recibida señal SIGTERM. Cerrando servidor...');
-    server.close(() => {
-        console.log('Servidor cerrado');
-        process.exit(0);
+    cleanupTempFiles().then(() => {
+        server.close(() => {
+            console.log('Servidor cerrado');
+            process.exit(0);
+        });
+    });
+});
+
+process.on('SIGINT', () => {
+    console.log('Recibida señal SIGINT. Cerrando servidor...');
+    cleanupTempFiles().then(() => {
+        server.close(() => {
+            console.log('Servidor cerrado');
+            process.exit(0);
+        });
     });
 });
